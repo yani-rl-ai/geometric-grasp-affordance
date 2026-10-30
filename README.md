@@ -12,6 +12,12 @@ top-down / side-entry feasibility, finger-reach-limited region) from the graph n
 
 *The live demo: annotated RGB camera (YOLO26 masks + DBL-GNG graphs + grasp region), depth camera with the graphs, and the MuJoCo scene with the graphs drawn in 3D.*
 
+## Video
+
+The demonstration video linked in the paper: **[Pick and Place using Instance Segmentation and DBL-GNG](https://www.youtube.com/watch?v=F42-p75Sw6M)** (YouTube).
+
+[![Demonstration video on YouTube](https://img.youtube.com/vi/F42-p75Sw6M/hqdefault.jpg)](https://www.youtube.com/watch?v=F42-p75Sw6M)
+
 ## Try it in five commands
 
 ```bash
@@ -63,7 +69,8 @@ raw points; a no-bias setting chosen post hoc) are in the paper and in `results/
 | `results/results_tables.md` | tables generated from those logs |
 | `scene.xml`, `assets/` | MuJoCo scene, Fetch model, YCB objects ([docs/ASSETS.md](docs/ASSETS.md)) |
 
-Not included: the demonstration videos and the YOLO26 weights (downloaded automatically on first use).
+Not included: the video files (the demonstration video is on [YouTube](https://www.youtube.com/watch?v=F42-p75Sw6M); `run_live_demo.py --record` and
+`run_pose_eval.py` record new ones) and the YOLO26 weights (downloaded automatically on first use).
 
 ## Citation
 
