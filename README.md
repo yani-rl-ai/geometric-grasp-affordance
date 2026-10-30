@@ -84,6 +84,6 @@ clustering", *Mathematics* 12(12), 1909, 2024. Please cite it as well.
 
 ## License
 
-**TODO before publishing:** choose a licence for the code and add a `LICENSE` file. Third-party components have their own terms: the YOLO26 weights
+The code and result logs of this repository are released under the [MIT License](LICENSE). Third-party components have their own terms: the YOLO26 weights
 and the `ultralytics` package (AGPL-3.0 as published by Ultralytics - check their current terms), MuJoCo (Apache-2.0), and the scene assets listed in
-[docs/ASSETS.md](docs/ASSETS.md).
+[docs/ASSETS.md](docs/ASSETS.md), whose redistribution terms the authors have not independently verified.

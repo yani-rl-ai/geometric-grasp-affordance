@@ -1,7 +1,8 @@
 # Third-party assets
 
-The simulation scene uses the following third-party material. **Before making the repository public, confirm that the terms of each item allow
-redistribution, add the required attributions below, and tick the boxes.**
+The simulation scene uses the following third-party material. **Status: the redistribution terms of the first two rows have not been independently
+verified by the authors (boxes unticked).** If you are a rights holder and want an item removed or a different attribution, please open an issue.
+The MIT licence of this repository (`LICENSE`) does not apply to these files.
 
 | Path | Content | Origin | Licence / terms | Confirmed |
 |---|---|---|---|---|
