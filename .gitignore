@@ -1,0 +1,18 @@
+# environments
+.venv/
+venv/
+fetch_sim_venv/
+__pycache__/
+*.pyc
+
+# model weights (downloaded automatically by Ultralytics on first use; AGPL-3.0 licensed by Ultralytics)
+*.pt
+
+# outputs of your own runs
+/demo_runs/
+/pose_eval_runs/
+*.mp4
+/scenario_search_conf*.csv
+/calib_*.csv
+screenshots_tmp/
+.DS_Store

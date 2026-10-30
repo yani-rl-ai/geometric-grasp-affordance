@@ -1,0 +1,171 @@
+<mujoco model="fetch_grasp_scene">
+  <!--
+    World frame (global coordinate) convention for this scenario:
+      - Origin (0,0,0) = floor, at the point below the Fetch base footprint reference used
+        by the stock Fetch MJCF (base_link is offset (0.2869, 0.2641, 0) from world origin;
+        this offset is a fixed artifact of the original URDF->MJCF conversion, kept as-is).
+      - +X axis  = direction the robot faces (arm workspace extends toward +X).
+      - +Z axis  = up.
+      - Table is centered at X=1.05, Y=0.2641 (same Y as the robot base, i.e. directly ahead),
+        spanning X in [0.75, 1.35], Y in [-0.186, 0.714], top surface at Z=0.72 m.
+      - All YCB objects are spawned resting on the table top (Z=0.722 m) inside the table
+        footprint and within the arm's reachable workspace (~0.5-0.85 m horizontal reach
+        from the shoulder).
+  -->
+  <compiler angle="radian" coordinate="local" meshdir="assets" texturedir="assets" autolimits="true"/>
+
+  <option timestep="0.002" gravity="0 0 -9.81" cone="elliptic" impratio="5" integrator="implicitfast">
+    <flag warmstart="enable"/>
+  </option>
+
+  <visual>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.6 0.6 0.6" specular="0.2 0.2 0.2"/>
+    <global offwidth="1280" offheight="960"/>
+    <quality shadowsize="4096"/>
+  </visual>
+
+  <include file="assets/fetch/shared.xml"/>
+
+  <asset>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.18 0.18 0.2" rgb2="0.28 0.28 0.3" width="300" height="300" mark="none"/>
+    <material name="floor_material" texture="floor_tex" texrepeat="10 10" texuniform="true" reflectance="0.05"/>
+    <material name="table_wood" rgba="0.55 0.38 0.23 1" specular="0.15" shininess="0.25"/>
+    <material name="table_leg_mat" rgba="0.22 0.17 0.12 1" specular="0.1" shininess="0.1"/>
+
+    <texture name="tex_cracker_box" type="2d" file="ycb/003_cracker_box/texture_map.png"/>
+    <material name="mat_cracker_box" texture="tex_cracker_box" specular="0.15" shininess="0.1"/>
+    <mesh name="mesh_cracker_box" file="ycb/003_cracker_box/textured.obj"/>
+
+    <texture name="tex_mustard_bottle" type="2d" file="ycb/006_mustard_bottle/texture_map.png"/>
+    <material name="mat_mustard_bottle" texture="tex_mustard_bottle" specular="0.3" shininess="0.4"/>
+    <mesh name="mesh_mustard_bottle" file="ycb/006_mustard_bottle/textured.obj"/>
+
+    <texture name="tex_banana" type="2d" file="ycb/011_banana/texture_map.png"/>
+    <material name="mat_banana" texture="tex_banana" specular="0.1" shininess="0.1"/>
+    <mesh name="mesh_banana" file="ycb/011_banana/textured.obj"/>
+
+    <texture name="tex_mug" type="2d" file="ycb/025_mug/texture_map.png"/>
+    <material name="mat_mug" texture="tex_mug" specular="0.3" shininess="0.3"/>
+    <mesh name="mesh_mug" file="ycb/025_mug/textured.obj"/>
+
+    <texture name="tex_tennis_ball" type="2d" file="ycb/056_tennis_ball/texture_map.png"/>
+    <material name="mat_tennis_ball" texture="tex_tennis_ball" specular="0.1" shininess="0.1"/>
+    <mesh name="mesh_tennis_ball" file="ycb/056_tennis_ball/textured.obj"/>
+  </asset>
+
+  <worldbody>
+    <light name="light_main" pos="0.6 0.3 2.2" dir="0 0 -1" directional="true" diffuse="0.75 0.75 0.72" specular="0.2 0.2 0.2" castshadow="true"/>
+    <light name="light_fill" pos="1.6 -0.6 1.6" dir="-0.4 0.4 -1" directional="true" diffuse="0.35 0.35 0.35" castshadow="false"/>
+
+    <geom name="floor" type="plane" size="3 3 0.1" material="floor_material"/>
+
+    <!-- Table: centered at (1.05, 0.2641), top surface at Z=0.72 -->
+    <body name="table" pos="1.05 0.2641 0">
+      <geom name="table_top" type="box" size="0.30 0.45 0.02" pos="0 0 0.70" material="table_wood"/>
+      <geom name="table_leg_fl" type="box" size="0.02 0.02 0.34" pos="0.25 0.40 0.34" material="table_leg_mat"/>
+      <geom name="table_leg_fr" type="box" size="0.02 0.02 0.34" pos="0.25 -0.40 0.34" material="table_leg_mat"/>
+      <geom name="table_leg_bl" type="box" size="0.02 0.02 0.34" pos="-0.25 0.40 0.34" material="table_leg_mat"/>
+      <geom name="table_leg_br" type="box" size="0.02 0.02 0.34" pos="-0.25 -0.40 0.34" material="table_leg_mat"/>
+    </body>
+
+    <include file="assets/fetch/robot.xml"/>
+
+    <!-- YCB objects resting on the table top (Z = 0.722) -->
+    <!-- cracker_box moved closer to the camera than its original (0.95,
+         0.10) spot: YOLO's best match for it is a weak one ("book"; COCO
+         has no cereal/cracker-box class), and empirically its confidence
+         was extremely sensitive to camera distance in a way none of the
+         other 4 objects were (0.147 at the old, farther spot vs ~0.80
+         closer up; a larger model checkpoint barely moved the number at
+         all, so this was about apparent size/legibility, not raw
+         recognizability).
+         An earlier "closer" spot (0.80, -0.05) turned out too close to the
+         table's edge on BOTH axes at once: only ~2cm clearance to the
+         X=0.75 edge (its own narrow-axis half-width is ~0.029m) and only
+         ~5cm to the Y=-0.186 front edge: an accidental knock (mouse drag,
+         a nearby grasp attempt) could easily have sent it off the table.
+         Pulled back to (0.83, 0.05): still close to the camera (only 3cm
+         further in X than the too-tight spot, negligible for detection
+         confidence) but with real margin on both edges (~5cm in X, ~15cm+
+         in Y), and >=0.25m from every neighbor. -->
+    <body name="cracker_box" pos="0.83 0.05 0.722">
+      <joint type="free"/>
+      <geom name="cracker_box_geom" type="mesh" mesh="mesh_cracker_box" material="mat_cracker_box" mass="0.411" friction="1.0 0.01 0.001" condim="4"/>
+    </body>
+
+    <body name="mustard_bottle" pos="0.85 0.30 0.722">
+      <joint type="free"/>
+      <geom name="mustard_bottle_geom" type="mesh" mesh="mesh_mustard_bottle" material="mat_mustard_bottle" mass="0.600" friction="1.0 0.01 0.001" condim="4"/>
+    </body>
+
+    <body name="mug" pos="1.00 0.45 0.722">
+      <joint type="free"/>
+      <!-- Same latent instability as the banana (see its comment above):
+           the mesh convex hull fills in the handle's concave gap into a
+           lopsided blob, which rests unevenly and slowly spins/drifts under
+           gravity with no contact at all; confirmed by stepping 10s of
+           pure idle physics from a fresh identity-quat spawn (no arm, no
+           mouse): the resting quat's yaw component crept from 0 to 0.015
+           and was still accelerating. First tried a cylinder collision
+           proxy (matching the cup body's round footprint) instead of the
+           mesh, which made it far WORSE (tipped over within half a second):
+           a cylinder resting on its flat circular end only gets ONE contact
+           point from MuJoCo's default primitive collision (no multi-point
+           patch the way a box gets 4 corners), so nothing resists it
+           tipping once it starts. A box proxy gets that 4-corner contact
+           and is stable; it's a squarer footprint than the true round mug,
+           harmless since the textured mesh (the true round shape) is what's
+           actually rendered, PROVIDED it stays invisible (rgba alpha=0
+           below): an earlier version left it visible (no rgba override,
+           unlike the banana's capsule proxy which already had alpha=0), so
+           it z-fought with the visual mesh, intermittently winning the
+           depth test and rendering as a plain grey box instead of the
+           textured mug depending on viewing angle. Found via the
+           perception benchmark: YOLO couldn't recognize a grey box as "cup". -->
+      <geom name="mug_visual" type="mesh" mesh="mesh_mug" material="mat_mug" contype="0" conaffinity="0" density="0"/>
+      <geom name="mug_geom" type="box" pos="0 0 0.0405" size="0.047 0.047 0.0405" mass="0.315" friction="1.0 0.01 0.001" condim="4" rgba="1 1 1 0"/>
+    </body>
+
+    <body name="banana" pos="1.15 0.20 0.722">
+      <joint type="free"/>
+      <!-- The banana's true shape is a concave crescent; using its mesh
+           convex hull for collision (like the other YCB objects here) fills
+           in that concavity into a lopsided blob that rests unevenly and
+           slowly slides/rotates under gravity even with no contact at all.
+           So visual and collision are split: the textured mesh is
+           visual-only (density=0, non-colliding), and a capsule
+           approximating its centerline handles physics: stable resting,
+           still grippable by the top-down gripper. -->
+      <geom name="banana_visual" type="mesh" mesh="mesh_banana" material="mat_banana" contype="0" conaffinity="0" density="0"/>
+      <geom name="banana_geom" type="capsule" fromto="-0.02 -0.07 0.020 -0.02 0.07 0.020" size="0.020" mass="0.150" friction="1.0 0.01 0.001" condim="4" rgba="1 1 0 0"/>
+    </body>
+
+    <!-- In front of the mug (mug is at 1.00, 0.45; smaller x = closer to
+         the camera/robot = "in front of" from that viewpoint), with clear
+         separation from every neighbor: >=0.17m to the mug and mustard
+         bottle (nearest two), >=0.39m to the other two, combined
+         half-widths topping out around 0.09m, and well inside the table
+         footprint (x in [0.75,1.35], y in [-0.186,0.714]), so there's no
+         way for it to end up rolling off the edge on its own. Originally
+         at 1.15, 0.42, moved once already for head-camera visibility (the
+         nano YOLO checkpoint never detected it there even close-up and
+         unoccluded (confirmed down to conf=0.01); this spot keeps that
+         same ~0.66m camera distance. -->
+    <body name="tennis_ball" pos="0.83 0.48 0.722">
+      <joint type="free"/>
+      <geom name="tennis_ball_geom" type="mesh" mesh="mesh_tennis_ball" material="mat_tennis_ball" mass="0.058" friction="1.2 0.01 0.001" condim="4"/>
+    </body>
+
+    <camera name="external_view" pos="1.9 -1.1 1.5" xyaxes="0.5 0.87 0 -0.4 0.23 0.89"/>
+  </worldbody>
+
+  <actuator>
+    <!-- Arm is driven via the robot0:mocap body welded to the gripper (see shared.xml) -->
+    <position name="act_r_gripper_finger" joint="robot0:r_gripper_finger_joint" kp="30000" ctrlrange="0 0.05" ctrllimited="true"/>
+    <position name="act_l_gripper_finger" joint="robot0:l_gripper_finger_joint" kp="30000" ctrlrange="0 0.05" ctrllimited="true"/>
+
+    <position name="act_torso_lift" joint="robot0:torso_lift_joint" kp="20000" ctrlrange="0.0386 0.3861" ctrllimited="true"/>
+    <position name="act_head_pan" joint="robot0:head_pan_joint" kp="300" ctrlrange="-1.57 1.57" ctrllimited="true"/>
+    <position name="act_head_tilt" joint="robot0:head_tilt_joint" kp="300" ctrlrange="-0.76 1.45" ctrllimited="true"/>
+  </actuator>
+</mujoco>

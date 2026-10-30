@@ -1,0 +1,7 @@
+# Core dependencies (versions the paper experiments were run with, Python 3.10, Ubuntu 22.04).
+# Newer versions will probably work but are untested; torch/ultralytics versions affect YOLO results slightly.
+mujoco==3.2.7
+numpy==1.26.4
+opencv-python==4.10.0.84
+ultralytics==8.4.144
+torch==2.14.0

@@ -1,0 +1,52 @@
+{
+ "argv": [
+  "run_pose_eval.py",
+  "--scenarios",
+  "P3",
+  "--out",
+  "pose_eval_runs/main",
+  "--seed",
+  "1"
+ ],
+ "poses": {
+  "P3": {
+   "xy": [
+    0.274,
+    0.057
+   ],
+   "yaw": 0.3490658503988659
+  }
+ },
+ "yolo_conf": 0.05,
+ "jitter_xy_m": 0.015,
+ "jitter_yaw_deg": 2.0,
+ "depth_noise_std_m": 0.0015,
+ "lift_m": 0.05,
+ "hold_s": 2.0,
+ "trials": 5,
+ "seed": 1,
+ "env": {
+  "GNG_IMPL": null,
+  "GNG_NODES": null,
+  "GNG_ETA": null,
+  "GNG_CUT": null,
+  "GRASP_XY_SOURCE": null,
+  "GRASP_DEPTH_M": null,
+  "GRASP_FINGER_KP": null,
+  "GNG_WIDTH_BIAS": null,
+  "LEGACY_OVERRIDES": null
+ },
+ "gng_width_bias": 0.01,
+ "squeeze_override": {},
+ "squeeze_margin": 0.004,
+ "source_sha256": {
+  "sim_core.py": "9dcbe4296054",
+  "grasp_planner.py": "495949a11671",
+  "dbl_gng_paper.py": "df1adedd8adb",
+  "dbl_gng.py": "a3d9fbb6e5fe",
+  "gng_overlay.py": "c242f6e160b9",
+  "perception.py": "78079b91e78a",
+  "run_pose_eval.py": "70ca1ff41b81",
+  "scene.xml": "b44da9d30879"
+ }
+}

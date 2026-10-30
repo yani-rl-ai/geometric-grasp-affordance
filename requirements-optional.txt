@@ -1,0 +1,4 @@
+# Optional: only needed for make_scenario_schematic.py (matplotlib) and the Open3D point-cloud helpers
+# in gng_overlay.py / grasp_planner.py (open3d). The live demo and the evaluation do NOT need them.
+matplotlib==3.10.9
+open3d==0.18.0
